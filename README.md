@@ -16,6 +16,8 @@ playback interface to it. It also acts as a UPnP server that can
 be browsed from a UPnP controller, where audio streams of all
 active playback devices (not just the default device) are served.
 
+Download a binary release [here](https://github.com/protyposis/LocalAudioBroadcast/releases).
+
 
 Features
 --------
