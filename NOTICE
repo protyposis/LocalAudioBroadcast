@@ -1,0 +1,25 @@
+Local Audio Broadcast
+Copyright 2014 Mario Guggenberger <mg@protyposis.net>
+https://github.com/protyposis/LocalAudioBroadcast
+
+-----------------------------------------------------------
+
+This application uses the following libraries and resources:
+
+UPnP Developer Tools
+http://opentools.homeip.net/dev-tools-for-upnp
+Copyright 2008 Intel Corporation
+Licensed under the Apache License 2.0
+
+C# WebServer
+http://webserver.codeplex.com/
+Copyright 2010 Jonas Gauffin
+Licensed under the Apache License 2.0
+
+NAudio
+http://naudio.codeplex.com/
+Licensed under the Microsoft Public License (Ms-PL)
+
+Icons from the Tango Icon Library
+http://tango.freedesktop.org/Tango_Icon_Library
+Released into the Public Domain
