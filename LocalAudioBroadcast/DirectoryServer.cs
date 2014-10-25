@@ -22,6 +22,7 @@ using System.Net;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
 using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace LocalAudioBroadcast
 {
@@ -84,14 +85,22 @@ namespace LocalAudioBroadcast
 		{
 			device.StartDevice();
 
+            IPAddress ipAddress = null; 
+
             foreach (IPEndPoint ipep in device.LocalIPEndPoints) {
                 if (ipep.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) {
                     Console.WriteLine("DLNA server STARTED listening @ " + ipep.ToString());
                     // create HTTP resource server endpoint
-                    ipEndPoint = new IPEndPoint(ipep.Address, ipep.Port + 1);
+                    ipAddress = ipep.Address;
                     break;
                 }
             }
+
+            // find a free port for the HTTP server: http://stackoverflow.com/a/9895416
+            Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            sock.Bind(new IPEndPoint(IPAddress.Any, 0)); // Pass 0 here.
+            ipEndPoint = new IPEndPoint(ipAddress, ((IPEndPoint)sock.LocalEndPoint).Port);
+            sock.Close();
 
             S1 = HttpBaseURL + "capture";
 
