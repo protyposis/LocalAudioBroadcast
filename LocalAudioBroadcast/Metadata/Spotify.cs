@@ -17,6 +17,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace LocalAudioBroadcast.Metadata {
     /// <summary>
@@ -98,12 +99,14 @@ namespace LocalAudioBroadcast.Metadata {
         }
 
         public event EventHandler<TrackInfoChangedEventArgs> TrackInfoChanged {
+            [MethodImpl(MethodImplOptions.Synchronized)]
             add {
                 if (_TrackInfoChanged == null) {
                     Start();
                 }
                 _TrackInfoChanged += value;
             }
+            [MethodImpl(MethodImplOptions.Synchronized)]
             remove {
                 _TrackInfoChanged -= value;
                 if (_TrackInfoChanged == null) {
@@ -113,11 +116,16 @@ namespace LocalAudioBroadcast.Metadata {
         }
 
         private void Start() {
+            /* When Stop() gets called, it sets _threadShouldStop to true, 
+             * but it can still take a while until the thread finally stops. 
+             * On a Start() call, such a stop can be cancelled by setting 
+             * _threadShouldStop back to false. */
+            _threadShouldStop = false;
+
             if (_threadRunning) {
                 return;
             }
 
-            _threadShouldStop = false;
             _threadRunning = true;
 
             UpdateSpotifyProcess();
