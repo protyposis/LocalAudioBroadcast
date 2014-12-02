@@ -134,7 +134,7 @@ namespace LocalAudioBroadcast
             return DidlUtil.GetMusicItem(itemId+"", "0", "1",
                 captureDevice.Name, "N/A", "N/A", "N/A", "0",
                 bitRate + "", sampleRate + "", channels + "", bitDepth + "",
-                "http-get:*:audio/L16;rate=" + sampleRate + ";channels=" + channels + ":DLNA.ORG_PN=LPCM",
+                "http-get:*:audio/wav:*",
                 url, "object.item.audioItem.musicTrack");
         }
 		

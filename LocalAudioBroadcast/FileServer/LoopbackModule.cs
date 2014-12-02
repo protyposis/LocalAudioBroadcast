@@ -18,6 +18,7 @@ using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -67,7 +68,7 @@ namespace LocalAudioBroadcast.FileServer
             }
 
             response.ContentLength = long.MaxValue;
-            response.ContentType = String.Format("audio/L16;rate={0};channels={1}",
+            response.ContentType = String.Format("audio/wav",
                 captureDevice.WaveFormat.SampleRate, 
                 captureDevice.WaveFormat.Channels);
             response.AddHeader("TransferMode.DLNA.ORG", "Streaming");
@@ -106,6 +107,31 @@ namespace LocalAudioBroadcast.FileServer
             Socket socket = HttpServerUtil.GetNetworkSocket(response);
             response.SendHeaders();
 
+            // build wav header
+            byte[] wavHeader = new byte[44];
+            MemoryStream header = new MemoryStream(wavHeader);
+            using (BinaryWriter headerWriter = new BinaryWriter(header)) {
+                headerWriter.Write(Encoding.ASCII.GetBytes("RIFF"));
+                headerWriter.Write(uint.MaxValue - 8);
+                headerWriter.Write(Encoding.ASCII.GetBytes("WAVE"));
+                headerWriter.Write(Encoding.ASCII.GetBytes("fmt "));
+                headerWriter.Write(16); // fmt chunk data size
+                headerWriter.Write((short)1); // format: 1 == PCM, 3 == PCM float
+                headerWriter.Write((short)captureDevice.WaveFormat.Channels);
+                headerWriter.Write(captureDevice.WaveFormat.SampleRate);
+                headerWriter.Write(captureDevice.WaveFormat.AverageBytesPerSecond);
+                headerWriter.Write((short)captureDevice.WaveFormat.BlockAlign);
+                headerWriter.Write((short)captureDevice.WaveFormat.BitsPerSample);
+                headerWriter.Write(Encoding.ASCII.GetBytes("data"));
+                headerWriter.Write(uint.MaxValue - 44);
+            }
+
+            // send header
+            // To retain the correct Shoutcast metadata interval bytecount, the header must be written 
+            // to the intermediary captureBuffer instead of directly to the response.
+            captureBuffer.Write(wavHeader, 0, wavHeader.Length);
+
+            // send audio data
             int bytesRead = 0;
             while (socket.Connected) {
                 Thread.Sleep(100);
@@ -173,7 +199,10 @@ namespace LocalAudioBroadcast.FileServer
                 loopbackCapture.DataAvailable += delegate(object sender, WaveInEventArgs e) {
                     if (e.BytesRecorded % 2 != 0)
                         throw new Exception("illegal state");
-                    AudioUtil.L16leToL16be(e.Buffer, 0, e.BytesRecorded); // DLNA LPCM must be big-endian (WAV is little-endian)
+
+                    // DLNA LPCM must be big-endian (WAV is little-endian)
+                    //AudioUtil.L16leToL16be(e.Buffer, 0, e.BytesRecorded); 
+
                     foreach (CircleBuffer cb in loopbackBuffers) {
                         lock (lockObject) {
                             cb.Write(e.Buffer, 0, e.BytesRecorded);
