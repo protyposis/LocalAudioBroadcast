@@ -4,7 +4,7 @@ Local Audio Broadcast
 This simple application captures the local audio playback
 in Windows and sends it over the local network to a UPnP renderer. 
 I originally wrote it to stream Spotify music playback from 
-my computer over the home network to my HTPC running XBMC 
+my computer over the home network to my HTPC running XBMC/Kodi 
 (since I wasn't satisfied with the available Spotify plugins), 
 it can be used for any audio though.
 
@@ -26,7 +26,7 @@ Features
 * Supports multiple simultaneous streams to multiple renderers
 * UPnP control point (to push the default playback stream to a UPnP renderer)
 * UPnP server (to request a playback stream from a UPnP controller)
-* Metadata embedding if requested by the renderer (supported e.g. by XBMC and foobar2000)
+* Metadata embedding if requested by the renderer (supported e.g. by XBMC/Kodi and foobar2000)
     * Embeds the Spotify track name into the stream if a running instance is detected
     * Can be extended for other music players through a simple interface
 
@@ -35,7 +35,7 @@ Requirements
 ------------
 
 * Windows 7+
-* tested with XBMC and foobar2000, not working with Windows Media Player
+* tested with XBMC 12, XBMC 13, Kodi 14 and foobar2000 1.3, not working with Windows Media Player
 
 
 Issues
