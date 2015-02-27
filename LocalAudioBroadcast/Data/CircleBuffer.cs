@@ -21,9 +21,11 @@ namespace LocalAudioBroadcast.Data {
         private byte[] buffer;
         private int fillLevel;
         private int startPosition;
+        private IInputTransform transform;
 
-        public CircleBuffer(int size) {
+        public CircleBuffer(int size, IInputTransform transform) {
             buffer = new byte[size];
+            this.transform = transform;
         }
 
         public int Length {
@@ -50,6 +52,8 @@ namespace LocalAudioBroadcast.Data {
             if (count > buffer.Length) {
                 throw new ArgumentException("buffer too small - cannot write that many");
             }
+
+            data = transform.Transform(data, offset, count);
 
             if (startPosition + count > buffer.Length) { // 2 writes necessary
                 int firstWriteCount = buffer.Length - startPosition;

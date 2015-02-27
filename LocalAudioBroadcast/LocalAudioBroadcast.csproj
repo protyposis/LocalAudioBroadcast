@@ -99,6 +99,8 @@
     <Compile Include="Data\AudioUtil.cs" />
     <Compile Include="Data\CircleBuffer.cs" />
     <Compile Include="ControlPoint.cs" />
+    <Compile Include="Data\IInputTransform.cs" />
+    <Compile Include="Data\StreamingFormatTransform.cs" />
     <Compile Include="DidlUtil.cs" />
     <Compile Include="DvConnectionManager.cs" />
     <Compile Include="DvContentDirectory.cs" />
@@ -136,6 +138,7 @@
     <Compile Include="Metadata\Spotify.cs" />
     <Compile Include="Metadata\TrackInfo.cs" />
     <Compile Include="Metadata\TrackInfoChangedEventArgs.cs" />
+    <Compile Include="StreamingFormat.cs" />
     <Compile Include="WasapiLoopbackCapture2.cs" />
   </ItemGroup>
   <ItemGroup>
