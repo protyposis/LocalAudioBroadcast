@@ -189,20 +189,16 @@ namespace LocalAudioBroadcast.FileServer
             }
 
             public void Add(CircleBuffer buffer) {
-                lock (lockObject) {
-                    if (loopbackBuffers.Count == 0) {
-                        Start();
-                    }
-                    loopbackBuffers.Add(buffer);
+                if (loopbackBuffers.Count == 0) {
+                    Start();
                 }
+                loopbackBuffers.Add(buffer);
             }
 
             public void Remove(CircleBuffer buffer) {
-                lock (lockObject) {
-                    loopbackBuffers.Remove(buffer);
-                    if (loopbackBuffers.Count == 0) {
-                        Stop();
-                    }
+                loopbackBuffers.Remove(buffer);
+                if (loopbackBuffers.Count == 0) {
+                    Stop();
                 }
             }
 
@@ -215,8 +211,9 @@ namespace LocalAudioBroadcast.FileServer
                     if (e.BytesRecorded % 2 != 0)
                         throw new Exception("illegal state");
 
-                    lock (lockObject) {
-                        foreach (CircleBuffer cb in loopbackBuffers) {
+                    CircleBuffer[] circleBuffersLocalCopy = loopbackBuffers.ToArray(); // avoids InvalidOperationException
+                    foreach (CircleBuffer cb in circleBuffersLocalCopy) {
+                        lock (lockObject) {
                             cb.Write(e.Buffer, 0, e.BytesRecorded);
                         }
                     }
