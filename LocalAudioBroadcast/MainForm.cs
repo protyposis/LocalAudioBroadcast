@@ -37,7 +37,25 @@ namespace LocalAudioBroadcast {
         private void MainForm_Shown(Object sender, EventArgs e) {
             // start after the form has loaded, else the BeginInvoke methods in the event handlers 
             // won't be executed in cases where a device is found before the form is loaded
-            lab.Start(); 
+            lab.Start();
+
+            StreamingFormat format;
+            try {
+                // try to get default format from settings
+                format = StreamingFormat.GetFormat(Settings.Default.StreamingFormat);
+                StreamingFormat.DefaultFormat = format;
+            }
+            catch {
+                // no (valid) default format in settings
+                format = StreamingFormat.DefaultFormat;
+            }
+
+            foreach(RadioButton rb in new[] { rbFormatLPCM, rbFormatWAV }) {
+                if (rb.Tag.ToString() == format.Id) {
+                    rb.Checked = true;
+                    break;
+                }
+            }
         }
 
         private void ControlPoint_OnAddedDevice(OpenSource.UPnP.UPnPSmartControlPoint sender, OpenSource.UPnP.UPnPDevice device) {
@@ -141,6 +159,13 @@ namespace LocalAudioBroadcast {
 
         private void btnAbout_Click(object sender, EventArgs e) {
             new AboutBox().ShowDialog(this);
+        }
+
+        private void rbFormat_CheckedChanged(object sender, EventArgs e) {
+            StreamingFormat format = StreamingFormat.GetFormat(((RadioButton)sender).Tag.ToString());
+            StreamingFormat.DefaultFormat = format;
+            Settings.Default.StreamingFormat = format.Id;
+            Settings.Default.Save();
         }
     }
 }

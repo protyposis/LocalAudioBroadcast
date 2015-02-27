@@ -9,6 +9,7 @@ namespace LocalAudioBroadcast {
         public static StreamingFormat WAV = new WAVFormat();
 
         private static StreamingFormat[] formats = { LPCM, WAV };
+        private static StreamingFormat defaultFormat = LPCM;
 
         public abstract string Id { get; }
 
@@ -36,7 +37,8 @@ namespace LocalAudioBroadcast {
         }
 
         public static StreamingFormat DefaultFormat {
-            get { return formats[0]; }
+            get { return defaultFormat; }
+            set { defaultFormat = value; }
         }
 
         class LPCMFormat : StreamingFormat {
