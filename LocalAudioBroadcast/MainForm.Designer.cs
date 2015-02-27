@@ -35,8 +35,8 @@
             this.btnRefreshRenderers = new System.Windows.Forms.Button();
             this.btnAbout = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.rbFormatLPCM = new System.Windows.Forms.RadioButton();
             this.rbFormatWAV = new System.Windows.Forms.RadioButton();
+            this.rbFormatLPCM = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.controlPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbVolume)).BeginInit();
@@ -153,6 +153,21 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Streaming Format";
             // 
+            // rbFormatWAV
+            // 
+            this.rbFormatWAV.AutoSize = true;
+            this.rbFormatWAV.Location = new System.Drawing.Point(66, 15);
+            this.rbFormatWAV.Name = "rbFormatWAV";
+            this.rbFormatWAV.Size = new System.Drawing.Size(50, 17);
+            this.rbFormatWAV.TabIndex = 1;
+            this.rbFormatWAV.TabStop = true;
+            this.rbFormatWAV.Tag = "wav";
+            this.rbFormatWAV.Text = "WAV";
+            this.toolTip1.SetToolTip(this.rbFormatWAV, "Use if LPCM is not supported by the target renderer. Can only stream for a limite" +
+        "d time, due to the length restriction of the wav header.");
+            this.rbFormatWAV.UseVisualStyleBackColor = true;
+            this.rbFormatWAV.CheckedChanged += new System.EventHandler(this.rbFormat_CheckedChanged);
+            // 
             // rbFormatLPCM
             // 
             this.rbFormatLPCM.AutoSize = true;
@@ -166,21 +181,6 @@
             this.toolTip1.SetToolTip(this.rbFormatLPCM, "Preferred method. Can stream for an infinitely long time.");
             this.rbFormatLPCM.UseVisualStyleBackColor = true;
             this.rbFormatLPCM.CheckedChanged += new System.EventHandler(this.rbFormat_CheckedChanged);
-            // 
-            // rbFormatWAV
-            // 
-            this.rbFormatWAV.AutoSize = true;
-            this.rbFormatWAV.Location = new System.Drawing.Point(66, 15);
-            this.rbFormatWAV.Name = "rbFormatWAV";
-            this.rbFormatWAV.Size = new System.Drawing.Size(50, 17);
-            this.rbFormatWAV.TabIndex = 1;
-            this.rbFormatWAV.TabStop = true;
-            this.rbFormatWAV.Tag = "wav";
-            this.rbFormatWAV.Text = "WAV";
-            this.toolTip1.SetToolTip(this.rbFormatWAV, "Use if LPCM is not supported. Can only stream for a limited time, due to the leng" +
-        "th restriction of the wav header.");
-            this.rbFormatWAV.UseVisualStyleBackColor = true;
-            this.rbFormatWAV.CheckedChanged += new System.EventHandler(this.rbFormat_CheckedChanged);
             // 
             // MainForm
             // 

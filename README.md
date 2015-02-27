@@ -35,7 +35,7 @@ Requirements
 ------------
 
 * Windows 7+
-* tested with XBMC 12, XBMC 13, Kodi 14 and foobar2000 1.3, not working with Windows Media Player
+* tested with XBMC 12, XBMC 13, Kodi 14 and foobar2000 1.3, Windows Media Player (WMP cannot browse server directory and only renders WAV)
 
 
 Issues
