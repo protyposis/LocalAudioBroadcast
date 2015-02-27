@@ -110,17 +110,12 @@ namespace LocalAudioBroadcast
             List<CaptureDevice> devices = WasapiLoopbackCapture2.GetLoopbackCaptureDevices();
 
             int itemId = 0;
-
-            foreach (StreamingFormat format in StreamingFormat.Formats) {
-                S2 += GenerateCaptureDeviceEntry(++itemId, defaultDevice, format, S1 + "?format=" + format.Id);
-            }
+            S2 += GenerateCaptureDeviceEntry(++itemId, defaultDevice, S1);
             
             int deviceId = 0;
             foreach (CaptureDevice captureDevice in devices) {
                 if (captureDevice != defaultDevice) {
-                    foreach (StreamingFormat format in StreamingFormat.Formats) {
-                        S2 += GenerateCaptureDeviceEntry(++itemId, captureDevice, format, S1 + "?id=" + deviceId + "&format=" + format.Id);
-                    }
+                    S2 += GenerateCaptureDeviceEntry(++itemId, captureDevice, S1 + "?id=" + deviceId);
                 }
                 deviceId++;
             }
@@ -129,7 +124,7 @@ namespace LocalAudioBroadcast
             S2count = (uint)itemId;
 		}
 
-        private String GenerateCaptureDeviceEntry(int itemId, CaptureDevice captureDevice, StreamingFormat format, String url) {
+        private String GenerateCaptureDeviceEntry(int itemId, CaptureDevice captureDevice, String url) {
             int sampleRate = captureDevice.MMDevice.AudioClient.MixFormat.SampleRate;
             /* The channels and bitDepth are fixed, as requested from the WasapiLoopbackCapture2
              * in LoopbackModule.Start(). */
@@ -138,9 +133,9 @@ namespace LocalAudioBroadcast
             int bitRate = sampleRate * channels * (bitDepth / 2) * 8;
 
             return DidlUtil.GetMusicItem(itemId+"", "0", "1",
-                captureDevice.Name + " (" + format.Name + ")", "N/A", "N/A", "N/A", "0",
+                captureDevice.Name, "N/A", "N/A", "N/A", "0",
                 bitRate + "", sampleRate + "", channels + "", bitDepth + "",
-                format.GetNetworkFormatDescriptor(sampleRate, channels),
+                StreamingFormat.DefaultFormat.GetNetworkFormatDescriptor(sampleRate, channels),
                 url, "object.item.audioItem.musicTrack");
         }
 		
