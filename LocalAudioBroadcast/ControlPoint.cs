@@ -176,7 +176,7 @@ namespace LocalAudioBroadcast {
             UPnPArgument[] args = new UPnPArgument[] {
                 new UPnPArgument("InstanceID", (uint)0),
                 new UPnPArgument("CurrentURI", DirectoryServer.S1),
-                new UPnPArgument("CurrentURIMetaData", "&lt;DIDL-Lite&gt;&lt;/DIDL-Lite&gt;")
+                new UPnPArgument("CurrentURIMetaData", null)
             };
 
             service.InvokeSync("SetAVTransportURI", args);
