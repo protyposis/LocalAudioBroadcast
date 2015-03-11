@@ -166,6 +166,9 @@ namespace LocalAudioBroadcast {
             StreamingFormat.DefaultFormat = format;
             Settings.Default.StreamingFormat = format.Id;
             Settings.Default.Save();
+
+            // reinitialize directory after format change to reflect the current format in the item XMl definitions
+            DirectoryServer.Directory.Init(DirectoryServer.S1);
         }
     }
 }

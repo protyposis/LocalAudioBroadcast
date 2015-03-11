@@ -173,10 +173,72 @@ namespace LocalAudioBroadcast {
             if (device == null) return;
             var service = device.GetServices(UPNP_SERVICE_AVTRANSPORT)[0];
 
+            /*
+             * Why does an empty/null CurrentURIMetaData not work with all renderers?
+             * 
+             * ----------------------------------------------------------------------
+             * 
+             * UPnP AVTransport:3 Service (2013, for UPnP 1.0)
+             * http://upnp.org/specs/av/av4/
+             * 
+             * 2.4.1 SetAVTransportURI
+             * 
+             * A control point can supply metadata associated with the specified resource, using 
+             * a DIDL-Lite XML Fragment (defined in the ContentDirectory service specification), 
+             * in argument CurrentURIMetaData.
+             * If a control point does not want to use this feature it can supply the empty string              * for the CurrentURIMetaData argument.
+             * 
+             * ----------------------------------------------------------------------
+             * 
+             * DLNA Part 1-1 (March 2014)
+             * http://www.dlna.org/dlna-for-industry/guidelines
+             * 
+             * 7.4.1.6.8.3
+             * 
+             * This is a mandate over what UPnP normally allows as optional behavior.
+             * 
+             * For a Push Controller (+PU+) that does not contain a CDS, the DIDL-Lite metadata 
+             * can typically be created from a DIDL-Lite XML fragment template containing only 
+             * the minimal properties as described in 7.4.1.6.14.9 or example, since the @id 
+             * property value only needs to be unique within the scope of the DIDL-Lite XML 
+             * fragment, the @id property value can be any value chosen by the Push Controller; 
+             * the @parent property can have a value of −1, and the @restricted property value 
+             * can be either 0 or 1.
+             * 
+             * 7.4.1.6.14.9
+             * 
+             * If a UPnP AV MediaRenderer control point specifies a value for the CurrentURIMetaData 
+             * argument of an AVT:SetAVTransportURI request, then the control point shall follow 
+             * these restrictions for the value of the CurrentURIMetaData argument, as follows:
+             * 
+             * - compliant with the DIDL-Lite schema;
+             * - exactly one <DIDL-Lite> element;
+             * - exactly one <item> or <container> element;
+             * - exactly one <dc:title> element and value;
+             * - a minimum of zero and a maximum of one <dc:creator> element and value;
+             * - exactly one <upnp:class> element and value;
+             * - a minimum of one <res> element.
+             * 
+             * All other XML elements are permitted as long as they are properly declared with 
+             * their namespaces.
+             * 
+             * The provided metadata shall represent the metadata of the content indicated by the 
+             * CurrentURI input argument. One of the <res> elements shall be the <res> element that 
+             * contains the URI specified in the CurrentURI input argument.
+             * 
+             * ----------------------------------------------------------------------
+             * 
+             * Conclusion: 
+             * Some renderers are UPnP certified and accept empty metadata, others are 
+             * DLNA specified and demand the metadata.
+             */
+
+            var defaultItem = DirectoryServer.Directory.GetItem(0);
+
             UPnPArgument[] args = new UPnPArgument[] {
                 new UPnPArgument("InstanceID", (uint)0),
-                new UPnPArgument("CurrentURI", DirectoryServer.S1),
-                new UPnPArgument("CurrentURIMetaData", null)
+                new UPnPArgument("CurrentURI", defaultItem.Uri),
+                new UPnPArgument("CurrentURIMetaData", defaultItem.GetDidl())
             };
 
             service.InvokeSync("SetAVTransportURI", args);

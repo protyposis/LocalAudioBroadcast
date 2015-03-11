@@ -102,6 +102,7 @@
     <Compile Include="Data\IInputTransform.cs" />
     <Compile Include="Data\StreamingFormatTransform.cs" />
     <Compile Include="DidlUtil.cs" />
+    <Compile Include="Directory.cs" />
     <Compile Include="DvConnectionManager.cs" />
     <Compile Include="DvContentDirectory.cs" />
     <Compile Include="DvX_MS_MediaReceiverRegistrar.cs" />

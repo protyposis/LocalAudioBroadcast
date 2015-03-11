@@ -19,9 +19,6 @@ using System;
 using OpenSource.UPnP;
 using System.Web;
 using System.Net;
-using NAudio.Wave;
-using NAudio.CoreAudioApi;
-using System.Collections.Generic;
 using System.Net.Sockets;
 
 namespace LocalAudioBroadcast
@@ -78,8 +75,9 @@ namespace LocalAudioBroadcast
 			ContentDirectory.Evented_SystemUpdateID = 0;
 		}
 
-        public static string S1, S2;
-        public static uint S2count;
+        // TODO: THESE STATIC VARS ARE AN UGLY HACK
+        public static string S1;
+        public static Directory Directory;
 		
 		public void Start()
 		{
@@ -104,40 +102,8 @@ namespace LocalAudioBroadcast
 
             S1 = HttpBaseURL + "capture";
 
-            S2 = DidlUtil.BeginDidl();
-
-            CaptureDevice defaultDevice = WasapiLoopbackCapture2.GetDefaultLoopbackCaptureDevice();
-            List<CaptureDevice> devices = WasapiLoopbackCapture2.GetLoopbackCaptureDevices();
-
-            int itemId = 0;
-            S2 += GenerateCaptureDeviceEntry(++itemId, defaultDevice, S1);
-            
-            int deviceId = 0;
-            foreach (CaptureDevice captureDevice in devices) {
-                if (captureDevice != defaultDevice) {
-                    S2 += GenerateCaptureDeviceEntry(++itemId, captureDevice, S1 + "?id=" + deviceId);
-                }
-                deviceId++;
-            }
-
-            S2 += DidlUtil.EndDidl();
-            S2count = (uint)itemId;
+            Directory = new Directory(S1);
 		}
-
-        private String GenerateCaptureDeviceEntry(int itemId, CaptureDevice captureDevice, String url) {
-            int sampleRate = captureDevice.MMDevice.AudioClient.MixFormat.SampleRate;
-            /* The channels and bitDepth are fixed, as requested from the WasapiLoopbackCapture2
-             * in LoopbackModule.Start(). */
-            int channels = 2;
-            int bitDepth = 16;
-            int bitRate = sampleRate * channels * (bitDepth / 2) * 8;
-
-            return DidlUtil.GetMusicItem(itemId+"", "0", "1",
-                captureDevice.Name, "N/A", "N/A", "N/A", "0",
-                bitRate + "", sampleRate + "", channels + "", bitDepth + "",
-                StreamingFormat.DefaultFormat.GetNetworkFormatDescriptor(sampleRate, channels),
-                url, "object.item.audioItem.musicTrack");
-        }
 		
 		public void Stop()
 		{
@@ -207,9 +173,9 @@ namespace LocalAudioBroadcast
             if (BrowseFlag == DvContentDirectory.Enum_A_ARG_TYPE_BrowseFlag.BROWSEDIRECTCHILDREN) {
                 switch (ObjectID) {
                     case "0": // root
-                        NumberReturned = S2count;
-                        TotalMatches = S2count;
-                        Result = S2;
+                        NumberReturned = Directory.Count;
+                        TotalMatches = Directory.Count;
+                        Result = Directory.GetDirectoryDidl();
                         break;
                 }
             }

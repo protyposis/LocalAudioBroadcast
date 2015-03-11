@@ -1,4 +1,5 @@
-﻿// Copyright 2014 Mario Guggenberger <mg@protyposis.net>
+﻿using NAudio.Wave;
+// Copyright 2014 Mario Guggenberger <mg@protyposis.net>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,5 +53,19 @@ namespace LocalAudioBroadcast {
             return "</DIDL-Lite>";
         }
 
+        public static String GenerateCaptureDeviceItem(int itemId, CaptureDevice captureDevice, String uri) {
+            int sampleRate = captureDevice.MMDevice.AudioClient.MixFormat.SampleRate;
+            /* The channels and bitDepth are fixed, as requested from the WasapiLoopbackCapture2
+             * in LoopbackModule.Start(). */
+            int channels = 2;
+            int bitDepth = 16;
+            int bitRate = sampleRate * channels * (bitDepth / 2) * 8;
+
+            return DidlUtil.GetMusicItem(itemId + "", "0", "1",
+                captureDevice.Name, "N/A", "N/A", "N/A", "0",
+                bitRate + "", sampleRate + "", channels + "", bitDepth + "",
+                StreamingFormat.DefaultFormat.GetNetworkFormatDescriptor(sampleRate, channels),
+                uri, "object.item.audioItem.musicTrack");
+        }
     }
 }
