@@ -26,13 +26,13 @@ namespace LocalAudioBroadcast {
         public ServiceEventHandler(UPnPDevice device) {
             renderingControlService = device.GetServices(ControlPoint.UPNP_SERVICE_CONTROL)[0];
             renderingControlService.OnUPnPEvent += RenderingControl_OnUPnPEvent;
-            renderingControlService.Subscribe(3000, delegate(UPnPService sender, bool SubscribeOK) {
+            renderingControlService.Subscribe(0, delegate(UPnPService sender, bool SubscribeOK) {
                 Console.WriteLine("Subscription " + (SubscribeOK ? "successful" : "FAILED") + ": " + sender.ServiceID);
             });
 
             avTransportService = device.GetServices(ControlPoint.UPNP_SERVICE_AVTRANSPORT)[0];
             avTransportService.OnUPnPEvent += AVTransport_OnUPnPEvent;
-            avTransportService.Subscribe(3000, delegate(UPnPService sender, bool SubscribeOK) {
+            avTransportService.Subscribe(0, delegate(UPnPService sender, bool SubscribeOK) {
                 Console.WriteLine("Subscription " + (SubscribeOK ? "successful" : "FAILED") + ": " + sender.ServiceID);
             });
         }
