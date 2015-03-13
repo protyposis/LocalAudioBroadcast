@@ -104,13 +104,21 @@ namespace LocalAudioBroadcast {
 
                 // update ui
                 tbVolume.Value = lab.ControlPoint.GetVolume();
+                // explicitely call then handler to update the volume button icon index (volumeIconIndex), 
+                // in case the line above didn't trigger it (when the new equals the old value)
+                tbVolume_ValueChanged(this, EventArgs.Empty);
                 controlPanel.Enabled = true;
             }
         }
 
         private void EventHandler_OnVolumeChanged(ServiceEventHandler sender, int volume) {
             if (InvokeRequired) { Invoke((MethodInvoker)(() => this.EventHandler_OnVolumeChanged(sender, volume))); return; }
+            // Remove the event handler for the value change and call it separately with a different sender
+            // to avoid it sending the volume value back to the renderer and create a loop.
+            tbVolume.ValueChanged -= tbVolume_ValueChanged;
             tbVolume.Value = volume;
+            tbVolume_ValueChanged(this, EventArgs.Empty);
+            tbVolume.ValueChanged += tbVolume_ValueChanged;
         }
 
         private void EventHandler_OnMuteChanged(ServiceEventHandler sender, bool muted) {
@@ -158,7 +166,11 @@ namespace LocalAudioBroadcast {
             }
             if (btnVolume.ImageIndex > 0) {
                 btnVolume.ImageIndex = volumeIconIndex;
-                lab.ControlPoint.SetVolume(tbVolume.Value);
+
+                // only set volume if change came from user
+                if (sender == tbVolume) {
+                    lab.ControlPoint.SetVolume(tbVolume.Value);
+                }
             }
         }
 
