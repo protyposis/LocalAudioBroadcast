@@ -31,9 +31,8 @@ namespace LocalAudioBroadcast {
         public event UPnPSmartControlPoint.DeviceHandler OnRemovedDevice;
 
         public ControlPoint() {
-            scp = new UPnPSmartControlPoint(null, null, UPNP_DEVICE_RENDERER);
-            scp.OnAddedDevice += new UPnPSmartControlPoint.DeviceHandler(ControlPoint_OnAddedDevice);
-            scp.OnRemovedDevice += new UPnPSmartControlPoint.DeviceHandler(ControlPoint_OnRemovedDevice);
+            scp = new UPnPSmartControlPoint(ControlPoint_OnAddedDevice, null, UPNP_DEVICE_RENDERER);
+            scp.OnRemovedDevice += ControlPoint_OnRemovedDevice;
         }
 
         public void Rescan() {
@@ -186,7 +185,8 @@ namespace LocalAudioBroadcast {
              * A control point can supply metadata associated with the specified resource, using 
              * a DIDL-Lite XML Fragment (defined in the ContentDirectory service specification), 
              * in argument CurrentURIMetaData.
-             * If a control point does not want to use this feature it can supply the empty string              * for the CurrentURIMetaData argument.
+             * If a control point does not want to use this feature it can supply the empty string 
+             * for the CurrentURIMetaData argument.
              * 
              * ----------------------------------------------------------------------
              * 
