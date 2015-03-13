@@ -135,6 +135,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="DirectoryServer.cs" />
+    <Compile Include="ServiceEventHandler.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Metadata\Spotify.cs" />
     <Compile Include="Metadata\TrackInfo.cs" />

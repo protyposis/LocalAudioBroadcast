@@ -20,12 +20,13 @@ using System.Web;
 namespace LocalAudioBroadcast {
     class ControlPoint {
 
-        private const string UPNP_DEVICE_RENDERER = "urn:schemas-upnp-org:device:MediaRenderer:1";
-        private const string UPNP_SERVICE_AVTRANSPORT = "urn:schemas-upnp-org:service:AVTransport:1";
-        private const string UPNP_SERVICE_CONTROL = "urn:schemas-upnp-org:service:RenderingControl:1";
+        public const string UPNP_DEVICE_RENDERER = "urn:schemas-upnp-org:device:MediaRenderer:1";
+        public const string UPNP_SERVICE_AVTRANSPORT = "urn:schemas-upnp-org:service:AVTransport:1";
+        public const string UPNP_SERVICE_CONTROL = "urn:schemas-upnp-org:service:RenderingControl:1";
 
         private UPnPSmartControlPoint scp;
         private UPnPDevice device;
+        private ServiceEventHandler serviceEventHandler;
 
         public event UPnPSmartControlPoint.DeviceHandler OnAddedDevice;
         public event UPnPSmartControlPoint.DeviceHandler OnRemovedDevice;
@@ -65,7 +66,21 @@ namespace LocalAudioBroadcast {
 
         public UPnPDevice Device {
             get { return device; }
-            set { device = value; }
+            set {
+                if (device != null) {
+                    serviceEventHandler.Unregister();
+                }
+
+                device = value;
+
+                if (device != null) {
+                    serviceEventHandler = new ServiceEventHandler(device);
+                }
+            }
+        }
+
+        public ServiceEventHandler EventHandler {
+            get { return serviceEventHandler; }
         }
 
         public int GetVolume() {

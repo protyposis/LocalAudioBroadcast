@@ -87,10 +87,40 @@ namespace LocalAudioBroadcast {
 
         private void cbRenderers_SelectedIndexChanged(object sender, EventArgs e) {
             if (cbRenderers.SelectedIndex >= 0) {
+                // deregister event handlers of previous device
+                if (lab.ControlPoint.Device != null) {
+                    lab.ControlPoint.EventHandler.OnVolumeChanged -= EventHandler_OnVolumeChanged;
+                    lab.ControlPoint.EventHandler.OnMuteChanged -= EventHandler_OnMuteChanged;
+                    lab.ControlPoint.EventHandler.OnPlaybackChanged -= EventHandler_OnPlaybackChanged;
+                }
+
+                // set new device
                 lab.ControlPoint.Device = ((ComboBoxItemWrapper)cbRenderers.SelectedItem).Device;
+
+                // register event handlers for new device
+                lab.ControlPoint.EventHandler.OnVolumeChanged += EventHandler_OnVolumeChanged;
+                lab.ControlPoint.EventHandler.OnMuteChanged += EventHandler_OnMuteChanged;
+                lab.ControlPoint.EventHandler.OnPlaybackChanged += EventHandler_OnPlaybackChanged;
+
+                // update ui
                 tbVolume.Value = lab.ControlPoint.GetVolume();
                 controlPanel.Enabled = true;
             }
+        }
+
+        private void EventHandler_OnVolumeChanged(ServiceEventHandler sender, int volume) {
+            if (InvokeRequired) { Invoke((MethodInvoker)(() => this.EventHandler_OnVolumeChanged(sender, volume))); return; }
+            tbVolume.Value = volume;
+        }
+
+        private void EventHandler_OnMuteChanged(ServiceEventHandler sender, bool muted) {
+            if (InvokeRequired) { Invoke((MethodInvoker)(() => this.EventHandler_OnMuteChanged(sender, muted))); return; }
+            btnVolume.ImageIndex = muted ? 0 : volumeIconIndex;
+        }
+
+        private void EventHandler_OnPlaybackChanged(ServiceEventHandler sender, bool playing) {
+            if (InvokeRequired) { Invoke((MethodInvoker)(() => this.EventHandler_OnPlaybackChanged(sender, playing))); return; }
+            btnPlay.ImageIndex = playing ? 1 : 0;
         }
 
         private void btnPlay_Click(object sender, EventArgs e) {
