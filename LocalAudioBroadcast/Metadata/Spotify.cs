@@ -26,9 +26,9 @@ namespace LocalAudioBroadcast.Metadata {
     /// </summary>
     class Spotify : ITrackInfoProvider {
 
-        private const string SPOTIFY_TITLE = "Spotify";
+        // Order if the titles is important, most specific (longest) title must come first
+        private static string[] SPOTIFY_TITLES = { "Spotify Premium", "Spotify" };
         private const string SPOTIFY_TITLE_SEPARATOR = " – ";
-        private const string SPOTIFY_PLAYBACK_TITLE_PREFIX = SPOTIFY_TITLE + SPOTIFY_TITLE_SEPARATOR;
 
         private Process spotifyProcess;
         private volatile bool _threadRunning;
@@ -57,10 +57,20 @@ namespace LocalAudioBroadcast.Metadata {
                 if (UpdateSpotifyProcess()) {
                     string title = spotifyProcess.MainWindowTitle;
 
+                    string spotifyTitle = "";
+                    string spotifyTitlePrefix = "";
+                    foreach(string st in SPOTIFY_TITLES) {
+                        if (title.StartsWith(st)) {
+                            spotifyTitle = st;
+                            spotifyTitlePrefix = st + SPOTIFY_TITLE_SEPARATOR;
+                            break;
+                        }
+                    }
+
                     // remove Spotify title prefix
-                    if (title.Length > SPOTIFY_PLAYBACK_TITLE_PREFIX.Length)
-                        title = title.Substring(SPOTIFY_PLAYBACK_TITLE_PREFIX.Length);
-                    else if (title.Equals(SPOTIFY_TITLE))
+                    if (title.Length > spotifyTitlePrefix.Length)
+                        title = title.Substring(spotifyTitlePrefix.Length);
+                    else if (title.Equals(spotifyTitle))
                         title = "N/A";
 
                     return title;
