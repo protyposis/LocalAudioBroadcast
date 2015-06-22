@@ -27,7 +27,7 @@ namespace LocalAudioBroadcast.Metadata {
     class Spotify : ITrackInfoProvider {
 
         // Order if the titles is important, most specific (longest) title must come first
-        private static string[] SPOTIFY_TITLES = { "Spotify Premium", "Spotify" };
+        private static string[] SPOTIFY_TITLES = { "Spotify Premium", "Spotify", "" };
         private const string SPOTIFY_TITLE_SEPARATOR = " – ";
 
         private Process spotifyProcess;
@@ -39,13 +39,17 @@ namespace LocalAudioBroadcast.Metadata {
         public bool UpdateSpotifyProcess() {
             if (spotifyProcess == null || spotifyProcess.HasExited) {
                 Process[] processes = Process.GetProcessesByName("spotify");
-                if (processes.Length > 0) {
-                    spotifyProcess = processes[0];
-                    return true;
+
+                // Since Spotify's UI refresh in 2014 (v1.0), it spawns multiple processes
+                // and we need to search for the GUI process
+                foreach (var process in processes) {
+                    if (process.MainWindowHandle != IntPtr.Zero) {
+                        spotifyProcess = process;
+                        return true;
+                    }
                 }
-                else {
-                    return false;
-                }
+
+                return false;
             }
 
             spotifyProcess.Refresh();
@@ -62,7 +66,9 @@ namespace LocalAudioBroadcast.Metadata {
                     foreach(string st in SPOTIFY_TITLES) {
                         if (title.StartsWith(st)) {
                             spotifyTitle = st;
-                            spotifyTitlePrefix = st + SPOTIFY_TITLE_SEPARATOR;
+                            if (st != String.Empty) {
+                                spotifyTitlePrefix = st + SPOTIFY_TITLE_SEPARATOR;
+                            }
                             break;
                         }
                     }
